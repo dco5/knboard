@@ -23,7 +23,9 @@ class User(AbstractUser):
             "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
         ),
         validators=[UnicodeUsernameValidator(), MinLengthValidator(3)],
-        error_messages={"unique": _("A user with that username already exists."),},
+        error_messages={
+            "unique": _("A user with that username already exists."),
+        },
     )
     avatar = models.ForeignKey(
         "Avatar", null=True, blank=True, on_delete=models.PROTECT

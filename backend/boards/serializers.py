@@ -124,3 +124,7 @@ class BoardDetailSerializer(serializers.ModelSerializer):
 
 class MemberSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
+
+
+class BoardMemberSerializer(MemberSerializer):
+    pass

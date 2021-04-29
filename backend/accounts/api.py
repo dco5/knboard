@@ -49,7 +49,9 @@ class ExcludeBoardMembersFilter(filters.BaseFilterBackend):
 
 
 class UserViewSet(
-    mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    GenericViewSet,
 ):
     serializer_class = UserSerializer
     queryset = User.objects.all()

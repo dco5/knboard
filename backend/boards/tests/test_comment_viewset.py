@@ -12,7 +12,8 @@ def test_create_comment_success(api_client, task_factory, steve):
     api_client.force_authenticate(user=steve)
     assert Comment.objects.all().count() == 0
     response = api_client.post(
-        reverse("comment-list"), {"task": task.id, "text": "Steve's comment"},
+        reverse("comment-list"),
+        {"task": task.id, "text": "Steve's comment"},
     )
     assert response.status_code == 201
     assert Comment.objects.all().count() == 1
@@ -24,7 +25,8 @@ def test_create_comment_not_authenticated(api_client, task_factory):
 
     # Not authenticated
     response = api_client.post(
-        reverse("comment-list"), {"task": task.id, "text": "anonymous comment"},
+        reverse("comment-list"),
+        {"task": task.id, "text": "anonymous comment"},
     )
     assert response.status_code == 401
     assert Comment.objects.all().count() == 0
@@ -36,7 +38,8 @@ def test_create_comment_invalid_task(api_client, task_factory, amy):
     # Amy not a member of the board where this task is
     api_client.force_authenticate(user=amy)
     response = api_client.post(
-        reverse("comment-list"), {"task": task.id, "text": "Amy's comment"},
+        reverse("comment-list"),
+        {"task": task.id, "text": "Amy's comment"},
     )
     assert response.status_code == 400
     assert Comment.objects.all().count() == 0
