@@ -13,13 +13,18 @@ import reorder, { reorderTasks } from "utils/reorder";
 import { RootState } from "store";
 import { useSelector, useDispatch } from "react-redux";
 import { updateTasksByColumn } from "features/task/TaskSlice";
-import { updateColumns, columnSelectors } from "features/column/ColumnSlice";
+import {
+  updateColumns,
+  columnSelectors,
+  syncAddColumn,
+} from "features/column/ColumnSlice";
 import { useParams } from "react-router-dom";
 import { fetchBoardById } from "./BoardSlice";
 import Spinner from "components/Spinner";
 import { barHeight, sidebarWidth } from "const";
 import PageError from "components/PageError";
 import SEO from "components/SEO";
+import { clientUUID, connect, disconnect, messages } from "websockets";
 
 const BoardContainer = styled.div`
   min-width: calc(100vw - ${sidebarWidth});
@@ -64,9 +69,23 @@ const Board = () => {
   const { id } = useParams();
 
   React.useEffect(() => {
+    let subscription: any;
+
     if (id) {
       dispatch(fetchBoardById({ boardId: id }));
+      connect(id);
+      subscription = messages.subscribe((message: any) => {
+        console.log(message);
+        dispatch(syncAddColumn(message.data));
+      });
     }
+    return () => {
+      messages.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+        disconnect();
+      }
+    };
   }, [id]);
 
   const onDragEnd = (result: DropResult) => {

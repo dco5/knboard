@@ -14,9 +14,13 @@ import {
   resetProfile,
 } from "features/profile/ProfileSlice";
 import { RootState } from "store";
+import { uuid } from "uuidv4";
+
+const clientUUID = uuid();
 
 interface InitialState {
   user: User | null;
+  clientID: string;
   loginLoading: boolean;
   loginErrors?: ValidationErrors;
   registerErrors?: ValidationErrors;
@@ -24,6 +28,7 @@ interface InitialState {
 
 export const initialState: InitialState = {
   user: null,
+  clientID: clientUUID,
   loginLoading: false,
   loginErrors: undefined,
   registerErrors: undefined,

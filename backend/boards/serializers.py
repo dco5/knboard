@@ -1,3 +1,5 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from rest_framework import serializers
@@ -7,9 +9,10 @@ from accounts.serializers import BoardMemberSerializer
 from .models import Board, Task, Column, Label, Comment
 
 User = get_user_model()
+channel_layer = get_channel_layer()
 
 
-class BoardModelSerializer(serializers.ModelSerializer):
+class BaseModelSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         if self.context["request"].user not in validated_data["board"].members.all():
             raise serializers.ValidationError("Must be a member of the board!")
@@ -88,7 +91,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ["id", "task", "author", "text", "created", "modified"]
 
 
-class ColumnSerializer(BoardModelSerializer):
+class ColumnSerializer(BaseModelSerializer):
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
     tasks = TaskSerializer(many=True, read_only=True)
 
@@ -97,7 +100,7 @@ class ColumnSerializer(BoardModelSerializer):
         fields = ["id", "title", "tasks", "column_order", "board"]
 
 
-class LabelSerializer(BoardModelSerializer):
+class LabelSerializer(BaseModelSerializer):
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
 
     def update(self, instance, validated_data):
@@ -124,3 +127,7 @@ class BoardDetailSerializer(serializers.ModelSerializer):
 
 class MemberSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
+
+
+class BoardMemberSerializer(MemberSerializer):
+    pass
