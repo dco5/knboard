@@ -160,3 +160,21 @@ ACCOUNT_UNIQUE_EMAIL = True
 
 # Allow entering as a guest
 ALLOW_GUEST_ACCESS = bool(os.environ.get("DJANGO_ALLOW_GUEST_ACCESS", default=""))
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        }
+    },
+    'loggers': {
+        'django': {},
+    },
+    'root': {
+        'handlers': ['console', ],
+        'level': 'INFO'
+    },
+}

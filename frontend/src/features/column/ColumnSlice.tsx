@@ -2,12 +2,14 @@ import {
   createSlice,
   createEntityAdapter,
   createAsyncThunk,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import { fetchBoardById } from "features/board/BoardSlice";
 import { IColumn, Id } from "types";
 import api, { API_SORT_COLUMNS, API_COLUMNS } from "api";
 import { createErrorToast, createInfoToast } from "features/toast/ToastSlice";
 import { RootState, AppDispatch, AppThunk } from "store";
+import { NEW_COLUMN, sendMessage } from "../../websockets";
 
 export const addColumn = createAsyncThunk<IColumn, number>(
   "column/addColumnStatus",
@@ -51,6 +53,10 @@ export const slice = createSlice({
   initialState,
   reducers: {
     setColumns: columnAdapter.setAll,
+    syncAddColumn: (state, action) => {
+      console.log(action.payload.data);
+      columnAdapter.addOne(state, action.payload.data);
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchBoardById.fulfilled, (state, action) => {
@@ -65,6 +71,8 @@ export const slice = createSlice({
     });
     builder.addCase(addColumn.fulfilled, (state, action) => {
       columnAdapter.addOne(state, action.payload);
+      console.log(action.payload);
+      sendMessage(NEW_COLUMN, action.payload, action.payload.id);
     });
     builder.addCase(patchColumn.fulfilled, (state, action) => {
       columnAdapter.updateOne(state, {
@@ -78,7 +86,7 @@ export const slice = createSlice({
   },
 });
 
-export const { setColumns } = slice.actions;
+export const { setColumns, syncAddColumn } = slice.actions;
 
 export const columnSelectors = columnAdapter.getSelectors(
   (state: RootState) => state.column
